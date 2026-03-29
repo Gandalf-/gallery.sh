@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>EXAMPLE TITLE</title>
+    <link rel="canonical" href="https://EXAMPLE.TLD" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="EXAMPLE DESCRIPTION" />
+
+    <style>
+      .zoom-wrapper {
+        overflow: hidden;
+        transition: overflow 0.5s;
+      }
+
+      .zoom {
+        transition: transform 0.5s ease;
+      }
+
+      .zoom:hover {
+        transform: scale(1.05);
+        /* Slightly enlarge the image on hover */
+      }
+
+      #grid {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 0.25rem;
+      }
+
+      #grid > div {
+        display: flex;
+        flex-direction: column;
+        width: calc(100% / 3);
+      }
+
+      #grid > div > a {
+        break-inside: avoid;
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      body {
+        background-color: black;
+        text-align: center;
+      }
+
+      figcaption,
+      h1,
+      h4 {
+        color: white;
+      }
+
+      .fancybox-caption__body {
+        font-size: larger;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      footer {
+        color: white;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 2em;
+        background-color: rgba(0, 0, 0, 0.9);
+        padding: 0 20px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      footer a {
+        color: white;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- fancybox is excellent, this project is not commercial -->
+    <script src="/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/jquery.fancybox.min.css" />
+    <script src="/jquery.fancybox.min.js"></script>
+    <script src="/images.js"></script>
+
+    <div id="grid"></div>
+
+    <footer>
+      <a href="https://EXAMPLE.TLD">EXAMPLE.TLD</a>
+      <p style="margin: 0; text-align: right">&copy; EXAMPLE 2026</p>
+    </footer>
+
+    <script type="text/javascript">
+      const gridContainer = document.getElementById('grid');
+      var previousColumnCount = 0;
+
+      function createAndPopulateGrid() {
+        const columnCount = calculateColumnCount();
+        if (columnCount === previousColumnCount) {
+          return;
+        }
+        previousColumnCount = columnCount;
+
+        gridContainer.innerHTML = ''; // Reset the grid
+        let columns = [];
+
+        for (let i = 0; i < columnCount; i++) {
+          const column = document.createElement('div');
+          column.style.width = `calc((100% / ${columnCount}) - 0.25rem)`;
+          columns.push(column);
+          gridContainer.appendChild(column);
+        }
+
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const columnHeights = new Array(columnCount).fill(0);
+        for (let i = 0; i < images.length; i++) {
+          // Find the column with the shortest height
+          let shortestColumn = 0;
+          for (let j = 1; j < columnCount; j++) {
+            if (columnHeights[j] < columnHeights[shortestColumn]) {
+              shortestColumn = j;
+            }
+          }
+
+          const image = images[i];
+          const a = document.createElement('a');
+          a.href = `/large/${image.s}.webp`;
+          a.classList.add('zoom-wrapper');
+          a.dataset.fancybox = 'gallery';
+          a.dataset.caption = image.a;
+
+          const img = document.createElement('img');
+          img.src = `/small/${image.s}.webp`;
+          img.alt = image.a;
+          img.width = image.w;
+          img.height = image.h;
+          img.classList.add('zoom');
+          if (columnHeights[shortestColumn] > viewportHeight) {
+            img.loading = 'lazy';
+          }
+          a.appendChild(img);
+
+          columns[shortestColumn].appendChild(a);
+          columnHeights[shortestColumn] += image.h;
+        }
+      }
+
+      function calculateColumnCount() {
+        const breakpoints = [
+          { minWidth: 2400, columns: 9 },
+          { minWidth: 2100, columns: 8 },
+          { minWidth: 1800, columns: 7 },
+          { minWidth: 1500, columns: 6 },
+          { minWidth: 1200, columns: 5 },
+          { minWidth: 900, columns: 4 },
+          { minWidth: 600, columns: 3 },
+        ];
+
+        for (let i = 0; i < breakpoints.length; i++) {
+          if (window.matchMedia(`(min-width: ${breakpoints[i].minWidth}px)`).matches) {
+            return breakpoints[i].columns;
+          }
+        }
+
+        return 2; // Default case for widths less than 600px
+      }
+
+      // Initial setup
+      createAndPopulateGrid();
+
+      // Recalculate on resize
+      window.addEventListener('resize', createAndPopulateGrid);
+    </script>
+  </body>
+</html>
