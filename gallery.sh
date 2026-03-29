@@ -12,18 +12,26 @@ set -e
 set -o pipefail
 shopt -s expand_aliases
 
+ROOT="$( dirname "$( realpath "${BASH_SOURCE[0]}" )" )"
+
 case $OSTYPE in
   darwin*)
     alias find=gfind
     alias md5sum='md5 -r'
-    required=( rsync magick identify sed gfind renice )
+    required=( rsync identify sed gfind renice )
     ;;
   *)
-    required=( rsync magick identify sed find renice )
+    required=( rsync identify sed find renice )
     ;;
 esac
 
-ROOT="$( dirname "$( realpath "${BASH_SOURCE[0]}" )" )"
+if command -v magick >/dev/null; then
+  :
+elif command -v convert >/dev/null; then
+  alias magick=convert
+else
+  die "Missing required utility: magick (ImageMagick)"
+fi
 
 report() { echo "$@" >&2; }
 die()    { report "$@"; exit 1; }

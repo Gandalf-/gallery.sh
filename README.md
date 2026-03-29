@@ -23,8 +23,8 @@ On Linux, `rsync` and ImageMagick are typically available via your package manag
 
 1. **Clone the repo**
    ```bash
-   git clone <repo-url>
-   cd gallery
+   git clone https://github.com/Gandalf-/gallery.sh.git
+   cd gallery.sh
    ```
 
 2. **Edit the config block** at the top of `gallery.sh`:
